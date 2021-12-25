@@ -1,0 +1,66 @@
+from telethon import TelegramClient
+import logging
+import time
+from telethon import events, Button
+import requests
+from bs4 import BeautifulSoup
+import cmd
+import time
+from telethon.sync import TelegramClient
+from telethon import functions, types
+import asyncio
+import os
+from datetime import datetime
+import time
+
+api_id = {id} 
+api_hash = "api_hash"
+bot = "optional"
+
+
+client = TelegramClient("guvenstalk5", api_id, api_hash).start(bot_token=bot)
+
+
+
+entity = client.get_entity("https://t.me/guvenstalk5")
+
+x = 6610000
+adlar = []
+soyadlar = []
+ballar = []
+isler = []
+
+while x != 6620000:
+	link = f"https://netice.az/result?type=2&exam=631&class=11&group=-1&sector=1&code={x}"
+	r = requests.get(link)
+	soup = BeautifulSoup(r.content, "html.parser")
+	is_nomresi = soup.findAll('div',{"class", "work_number"})
+	if len(is_nomresi) == 0:
+		print(f"{x} iş nömrəli hesab yoxdur.! ❌")
+		x = x+1
+	else:
+		print(f"{x} iş nömrəli hesab tapıldı. ✅")
+		
+		ad = soup.findAll("div", {"class","student_name"})
+		adlar.append(ad[0])
+		soyad = soup.findAll("div", {"class","student_surname"})
+		soyadlar.append(soyad[0])
+		bal = soup.findAll("div", {"class","score"})
+		ballar.append(bal[0])
+		is_nomresi2 = soup.findAll("div", {"class","work_number"})
+		isler.append(is_nomresi2[0])
+		x=x+1
+		time.sleep(0.5)
+		
+y = 0
+while True:
+	try:
+		mesaj =f"{adlar[y].text}:{soyadlar[y].text}:{ballar[y].text}:{isler[y].text}"
+		client.send_message(entity = entity, message= mesaj)
+		y = y+1
+	except:
+		print(f"{len(isler)} istifadçənin məlumatları yazıldı.")
+		break
+
+	
+client.run_until_disconnected()
